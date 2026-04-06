@@ -45,6 +45,9 @@ export const setting = sqliteTable('setting', {
 	tgMsgFrom: text('tg_msg_from').default('only-name').notNull(),
 	tgMsgTo: text('tg_msg_to').default('show').notNull(),
 	tgMsgText: text('tg_msg_text').default('hide').notNull(),
+	webhookUrl: text('webhook_url').default('').notNull(),
+	webhookBody: text('webhook_body').default('').notNull(),
+	webhookStatus: integer('webhook_status').default(1).notNull(),
 	minEmailPrefix: integer('min_email_prefix').default(0).notNull(),
 	emailPrefixFilter: text('email_prefix_filter').default('').notNull()
 });

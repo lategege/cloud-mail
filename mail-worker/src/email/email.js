@@ -10,6 +10,7 @@ import emailUtils from '../utils/email-utils';
 import roleService from '../service/role-service';
 import userService from '../service/user-service';
 import telegramService from '../service/telegram-service';
+import webhookService from '../service/webhook-service';
 
 export async function email(message, env, ctx) {
 
@@ -163,6 +164,9 @@ export async function email(message, env, ctx) {
 			}));
 
 		}
+
+		//发送 Webhook 通知
+		await webhookService.sendEmailToWebhook({ env }, emailRow)
 
 	} catch (e) {
 		console.error('邮件接收异常: ', e);

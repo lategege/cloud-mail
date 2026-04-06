@@ -255,6 +255,15 @@
                 </div>
               </div>
               <div class="setting-item">
+                <div><span>{{ $t('webhook') }}</span></div>
+                <div class="forward">
+                  <span>{{ setting.webhookStatus === 0 ? $t('enabled') : $t('disabled') }}</span>
+                  <el-button class="opt-button" size="small" type="primary" @click="openWebhookSetting">
+                    <Icon icon="fluent:settings-48-regular" width="18" height="18"/>
+                  </el-button>
+                </div>
+              </div>
+              <div class="setting-item">
                 <div><span>{{ $t('forwardingRules') }}</span></div>
                 <div class="forward">
                   <span>{{ setting.ruleType === 0 ? $t('forwardAll') : $t('rules') }}</span>
@@ -593,6 +602,37 @@
           </div>
         </template>
       </el-dialog>
+      <el-dialog
+          v-model="webhookShow"
+          class="forward-dialog"
+      >
+        <template #header>
+          <div class="forward-head">
+            <span class="forward-set-title">{{ $t('webhook') }}</span>
+            <el-tooltip effect="dark" :content="$t('webhookDesc')">
+              <Icon class="warning" icon="fe:warning" width="18" height="18"/>
+            </el-tooltip>
+          </div>
+        </template>
+        <div class="forward-set-body">
+          <el-input :placeholder="$t('webhookUrl')" v-model="webhookUrl"></el-input>
+          <el-input
+              type="textarea"
+              :rows="6"
+              :placeholder="$t('webhookBody')"
+              v-model="webhookBody"
+          ></el-input>
+        </div>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-switch v-model="webhookStatus" :active-value="0" :inactive-value="1" :active-text="$t('enable')"
+                       :inactive-text="$t('disable')"/>
+            <el-button :loading="settingLoading" type="primary" @click="webhookSave">
+              {{ $t('save') }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
       <el-dialog class="resend-table" v-model="showResendList" :title="$t('resendTokenList')">
         <el-table :data="resendList">
           <el-table-column :min-width="emailColumnWidth" property="key" :label="$t('domain')"
@@ -771,6 +811,7 @@ const tgSettingShow = ref(false)
 const noticePopupShow = ref(false)
 const thirdEmailShow = ref(false)
 const forwardRulesShow = ref(false)
+const webhookShow = ref(false)
 const emailPrefixShow = ref(false)
 const showResendList = ref(false)
 const settingStore = useSettingStore();
@@ -849,6 +890,9 @@ const ruleEmail = ref([])
 const tgMsgFrom = ref('')
 const tgMsgTo = ref('')
 const tgMsgText = ref('')
+const webhookUrl = ref('')
+const webhookBody = ref('')
+const webhookStatus = ref(0)
 
 const tgMsgFromOption = [{label: t('show'), value: 'show'}, {label: t('hide'), value: 'hide'}, {label: t('onlyName'), value:'only-name'}]
 const tgMsgToOption = [{label: t('show'), value: 'show'}, {label: t('hide'), value: 'hide'}]
@@ -1021,6 +1065,13 @@ function openThirdEmailSetting() {
   thirdEmailShow.value = true
 }
 
+function openWebhookSetting() {
+  webhookUrl.value = setting.value.webhookUrl || ''
+  webhookBody.value = setting.value.webhookBody || ''
+  webhookStatus.value = setting.value.webhookStatus
+  webhookShow.value = true
+}
+
 function openEmailPrefix() {
   emailPrefixShow.value = true
 }
@@ -1124,6 +1175,15 @@ function forwardEmailSave() {
   const form = {
     forwardStatus: forwardStatus.value,
     forwardEmail: forwardEmail.value + ''
+  }
+  editSetting(form)
+}
+
+function webhookSave() {
+  const form = {
+    webhookStatus: webhookStatus.value,
+    webhookUrl: webhookUrl.value,
+    webhookBody: webhookBody.value
   }
   editSetting(form)
 }
@@ -1317,6 +1377,7 @@ function editSetting(settingForm, refreshStatus = true) {
     tgSettingShow.value = false
     thirdEmailShow.value = false
     forwardRulesShow.value = false
+    webhookShow.value = false
     addVerifyCountShow.value = false
     regVerifyCountShow.value = false
     noticePopupShow.value = false
