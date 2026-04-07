@@ -153,7 +153,7 @@ const zh = {
     emailPush: '邮件推送',
     tgBot: 'Telegram 机器人',
     webhook: 'Webhook',
-    webhookDesc: '收到邮件时发送 POST 请求到指定 URL，支持 [from] [title] [content] 模板变量',
+    webhookDesc: '收到邮件时发送 POST 请求到指定 URL，支持 [from] [to] [title] [content] 模板变量',
     webhookUrl: '请求地址',
     webhookBody: '请求内容',
     disable: '关闭',

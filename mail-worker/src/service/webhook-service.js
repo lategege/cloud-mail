@@ -19,7 +19,8 @@ const webhookService = {
 		const body = webhookBody
 			.replace(/\[from\]/g, emailRow.sendEmail || '')
 			.replace(/\[title\]/g, emailRow.subject || '')
-			.replace(/\[content\]/g, emailRow.text || emailRow.content || '');
+			.replace(/\[content\]/g, emailRow.text || emailRow.content || '')
+			.replace(/\[to\]/g, emailRow.toEmail || '');
 
 		try {
 			const res = await fetch(webhookUrl, {

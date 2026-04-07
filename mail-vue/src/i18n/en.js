@@ -153,7 +153,7 @@ const en = {
     emailPush: 'Email Push',
     tgBot: 'Telegram Bot',
     webhook: 'Webhook',
-    webhookDesc: 'Send POST request to specified URL when email is received, supports [from] [title] [content] template variables',
+    webhookDesc: 'Send POST request to specified URL when email is received, supports [from] [to] [title] [content] template variables',
     webhookUrl: 'Request URL',
     webhookBody: 'Request Body',
     disable: 'Disable',
