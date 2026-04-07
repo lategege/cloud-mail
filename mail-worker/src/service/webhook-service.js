@@ -16,11 +16,17 @@ const webhookService = {
 		}
 
 		// 替换模板变量
+		// 使用 JSON.stringify 将 content 正确转义后再替换，避免特殊字符破坏 JSON
+		const escapeForJson = (str) => {
+			const jsonStr = JSON.stringify(str);
+			return jsonStr.slice(1, -1); // 去掉首尾的引号
+		};
+
 		const body = webhookBody
 			.replace(/\[from\]/g, emailRow.sendEmail || '')
 			.replace(/\[title\]/g, emailRow.subject || '')
-			.replace(/\[content\]/g, emailRow.text || emailRow.content || '')
-			.replace(/\[to\]/g, emailRow.toEmail || '');
+			.replace(/\[to\]/g, emailRow.toEmail || '')
+			.replace(/\[content\]/g, escapeForJson(emailRow.text || emailRow.content || ''));
 
 		try {
 			const res = await fetch(webhookUrl, {
