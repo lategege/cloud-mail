@@ -11,7 +11,20 @@ import verifyRecordService from './verify-record-service';
 
 const settingService = {
 
+	async ensureWebhookColumns(c) {
+		try {
+			await c.env.db.batch([
+				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN webhook_url TEXT NOT NULL DEFAULT '';`),
+				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN webhook_body TEXT NOT NULL DEFAULT '';`),
+				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN webhook_status INTEGER NOT NULL DEFAULT 1;`)
+			]);
+		} catch (e) {
+			console.warn(`确保 webhook 字段存在: ${e.message}`);
+		}
+	},
+
 	async refresh(c) {
+		await this.ensureWebhookColumns(c);
 		const settingRow = await orm(c).select().from(setting).get();
 		settingRow.resendTokens = JSON.parse(settingRow.resendTokens);
 		c.set('setting', settingRow);
