@@ -35,24 +35,22 @@ const dbInit = {
 	},
 
 	async v3_0DB(c) {
-		try {
-			await c.env.db.batch([
-				await c.env.db.prepare(`ALTER TABLE email ADD COLUMN code TEXT NOT NULL DEFAULT '';`),
-				await c.env.db.prepare(`ALTER TABLE setting ADD COLUMN ai_code INTEGER NOT NULL DEFAULT 1;`),
-				await c.env.db.prepare(`ALTER TABLE setting ADD COLUMN ai_code_filter TEXT NOT NULL DEFAULT '';`)
-			]);
-		} catch (e) {
-			console.warn(`跳过字段：${e.message}`);
-		}
+		const statements = [
+			`ALTER TABLE email ADD COLUMN code TEXT NOT NULL DEFAULT '';`,
+			`ALTER TABLE setting ADD COLUMN ai_code INTEGER NOT NULL DEFAULT 1;`,
+			`ALTER TABLE setting ADD COLUMN ai_code_filter TEXT NOT NULL DEFAULT '';`,
+			`ALTER TABLE setting ADD COLUMN black_subject TEXT NOT NULL DEFAULT '';`,
+			`ALTER TABLE setting ADD COLUMN black_content TEXT NOT NULL DEFAULT '';`,
+			`ALTER TABLE setting ADD COLUMN black_from TEXT NOT NULL DEFAULT '';`
+		];
 
-		try {
-			await c.env.db.batch([
-				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN black_subject TEXT NOT NULL DEFAULT '';`),
-				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN black_content TEXT NOT NULL DEFAULT '';`),
-				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN black_from TEXT NOT NULL DEFAULT '';`)
-			]);
-		} catch (e) {
-			console.warn(`跳过字段：${e.message}`);
+		for (const sql of statements) {
+			try {
+				await c.env.db.prepare(sql).run();
+			} catch (e) {
+				// "duplicate column" means a prior deployment already applied this step.
+				console.warn(`跳过字段：${e.message}`);
+			}
 		}
 
 	},
@@ -66,14 +64,18 @@ const dbInit = {
 	},
 
 	async v2_10DB(c) {
-		try {
-			await c.env.db.batch([
-				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN webhook_url TEXT NOT NULL DEFAULT '';`),
-				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN webhook_body TEXT NOT NULL DEFAULT '';`),
-				c.env.db.prepare(`ALTER TABLE setting ADD COLUMN webhook_status INTEGER NOT NULL DEFAULT 1;`)
-			]);
-		} catch (e) {
-			console.warn(`跳过字段：${e.message}`);
+		const statements = [
+			`ALTER TABLE setting ADD COLUMN webhook_url TEXT NOT NULL DEFAULT '';`,
+			`ALTER TABLE setting ADD COLUMN webhook_body TEXT NOT NULL DEFAULT '';`,
+			`ALTER TABLE setting ADD COLUMN webhook_status INTEGER NOT NULL DEFAULT 1;`
+		];
+
+		for (const sql of statements) {
+			try {
+				await c.env.db.prepare(sql).run();
+			} catch (e) {
+				console.warn(`跳过字段：${e.message}`);
+			}
 		}
 	},
 
